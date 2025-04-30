@@ -20,6 +20,7 @@ return new class extends Migration
 
             $table->unsignedBigInteger('seccion_id');
             $table->foreign('seccion_id')->references('id')->on('secciones');
+            $table->timestamps();
         });
     }
 

@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Seccion;
+use App\Models\Alumno;
 use App\Http\Requests\StoreSeccionRequest;
 use App\Http\Requests\UpdateSeccionRequest;
+use Illuminate\Http\Request;
 
 class SeccionController extends Controller
 {
@@ -13,7 +15,8 @@ class SeccionController extends Controller
      */
     public function index()
     {
-        //
+        $secciones = Seccion::all();
+        return view('secciones.index', compact('secciones'));
     }
 
     /**
@@ -35,10 +38,13 @@ class SeccionController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Seccion $seccion)
+    public function show($id)
     {
-        //
+        $seccion = Seccion::with('alumnos')->findOrFail($id);
+        $alumnos = Alumno::all();
+        return view('secciones.show', compact('seccion', 'alumnos'));
     }
+    
 
     /**
      * Show the form for editing the specified resource.
@@ -63,4 +69,12 @@ class SeccionController extends Controller
     {
         //
     }
+    
+    public function asignarAlumnos(Request $request, $id)
+    {
+        $seccion = Seccion::findOrFail($id);
+        $seccion->alumnos()->syncWithoutDetaching($request->input('alumnos', []));
+        return redirect()->route('secciones.show', $seccion->id)->with('success', 'Alumnos inscritos correctamente.');
+    }
+
 }
